@@ -1,46 +1,42 @@
+import os
 from telegram import Update
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
+import google.generativeai as genai
 
-# --- Replace with your Bot Token ---
-BOT_TOKEN = "8178470012:AAEfXIJynD0LglxHx0e7XPjOttf9eJ-zvZw"
+# --- Replace with your tokens ---
+BOT_TOKEN = "8178470012:AAEfXIJynD0LglxHx0e7XPjOttf9eJ-zvZw" # Your Telegram Bot Token
+GEMINI_API_KEY = "YOUR_GEMINI_API_KEY" # Paste your Gemini API Key here
+
+# --- Configure Gemini ---
+genai.configure(api_key=AIzaSyCc-mBqA5qmI3zgSYccZCf1ap4MkbpX-OY)
+model = genai.GenerativeModel('gemini-1.5-flash') # Using the fast and capable Flash model
 
 # /start command handler
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("Hello! 👋 I am your bot. Ask me anything simple!")
+    await update.message.reply_text("Hello! 👋 I am a bot powered by Gemini. Ask me anything!")
 
-# Function to handle messages
+# Function to handle messages and get a response from Gemini
 async def reply_to_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    user_message = update.message.text.lower()
+    user_message = update.message.text
+    
+    # Let the user know the bot is "thinking"
+    await context.bot.send_chat_action(chat_id=update.effective_chat.id, action='typing')
 
-    # Simple responses
-    if "hi" in user_message or "hello" in user_message:
-        response = "Hello there! 😊"
-    elif "how are you" in user_message:
-        response = "I’m good, thanks for asking! How are you?"
-    elif "your name" in user_message:
-        response = "I’m AHC Results Bot 🤖"
-    elif "bye" in user_message:
-        response = "Goodbye! 👋 Have a great day!"
-    elif "what can you do" in user_message:
-        response = "I can chat with you, answer simple questions, and help you with basic tasks!"
-    elif "who made you" in user_message:
-        response = "I was created by a developer using Python and the Telegram Bot API! 🧑‍💻"
-    elif "tell me a joke" in user_message:
-        response = "Why don’t scientists trust atoms? Because they make up everything! 😄"
-    elif "what is your purpose" in user_message:
-        response = "I'm here to assist, inform, and chat with you in a friendly way! 🤗"
-    elif "how old are you" in user_message:
-        response = "I'm just a few lines of code, so technically ageless! ⏳"
-    elif "thank you" in user_message or "thanks" in user_message:
-        response = "You're welcome! 😊"
-    else:
-        response = "Sorry, I don’t understand that yet. 🙈"
+    try:
+        # Send the user's message to Gemini and get the response
+        gemini_response = model.generate_content(user_message)
+        response = gemini_response.text
+    
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        response = "Sorry, I'm having trouble thinking right now. 🧠⚡️ Please try again later."
 
+    # Send Gemini's response back to the user
     await update.message.reply_text(response)
-
 
 # Main function
 def main():
+    print("Starting bot...")
     app = Application.builder().token(BOT_TOKEN).build()
 
     # Commands
