@@ -2,7 +2,7 @@ import os
 from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
 
-TOKEN = os.getenv("8178470012: AAEFXIJynDOLg1xHx0e7XPj Ottf9eJ-zvZw")
+TOKEN = os.getenv("8178470012:AAEFXIJynDOLg1xHx0e7XPjOttf9eJ-zvZw")
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("✅ Bot is running 24/7!")
